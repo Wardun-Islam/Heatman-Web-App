@@ -82,6 +82,7 @@ def index():
                 linewidths=line_width,
                 cmap=color_scheme,
                 ax=ax,
+                cbar_kws={"aspect": 70}
             )
             plt.title(plot_title, fontsize=font_size)
             plt.tight_layout()
