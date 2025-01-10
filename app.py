@@ -113,7 +113,3 @@ def index():
     return render_template(
         "index.html", heatmap_generated=False, error=None, color_schemes=color_schemes
     )
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
