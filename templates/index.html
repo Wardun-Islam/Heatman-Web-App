@@ -1,269 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Dynamic Heatmap Generator for Excel Data" />
-    <meta name="author" content="Your Name or Company" />
-    <title>Dynamic Heatmap Generator</title>
-    <meta property="og:title" content="Dynamic Heatmap Generator" />
-    <meta
-      property="og:description"
-      content="Create heatmaps from your Excel data quickly and easily."
-    />
-    <meta property="og:image" content="path/to/your/image.png" />
-    <meta property="og:url" content="https://yourwebsite.com" />
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-100 font-sans p-6">
-    <div class="mx-auto">
-      <!-- Loading Spinner -->
-      <div class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 z-50 hidden" id="loading-spinner">
-        <div class="rounded-md h-12 w-12 border-4 border-t-4 border-blue-500 animate-spin absolute" style="top: calc(50% - 24px); left: calc(50% - 24px);"></div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dynamic Heatmap Generator for Excel Data" />
+  <meta name="author" content="Md Wardun Islam" />
+  <title>Dynamic Heatmap Generator</title>
+  <meta property="og:title" content="Dynamic Heatmap Generator" />
+  <meta property="og:description" content="Create heatmaps from your Excel data quickly and easily." />
+  <meta property="og:image" content="{{ url_for('static', filename='android-chrome-512x512.png', _external=True) }}" />
+  <meta property="og:url" content="{{ request.url }}" />
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body class="bg-gray-100 font-sans p-6">
+  <div class="mx-auto">
+    <!-- Loading Spinner -->
+    <div class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 z-50 hidden" id="loading-spinner">
+      <div style="top: 50%; left: 50%; transform: translate(-50%, -50%)" class="absolute">
+        <img style="width: 140px; height: 140px; border-radius: 70px" src="https://i.ibb.co.com/VJ4WJvz/loading.gif"
+          alt="loading" />
       </div>
-      {% if heatmap_generated %}
-        <div class="flex leading-5 items-center mb-4 cursor-pointer" onclick="window.history.back()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left w-5 h-5">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          <span style="margin-bottom: 3px">Back</span>
-        </div>
-        <div class="text-center mt-8">
-          <h2 class="text-xl font-bold">Generated Heatmap</h2>
-          <img
-            src="data:image/png;base64,{{ img_base64 }}"
-            alt="Generated Heatmap"
-            class="mt-4 max-w-full h-auto rounded-lg mx-auto"
-          />
-          <a href="data:image/png;base64,{{ img_base64 }}" download="heatmap.png" class="inline-block mt-4 py-2 px-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-            Download Heatmap
-          </a>
-        </div>
-      {% elif error %}
-        <div class="flex leading-5 items-center mb-4 cursor-pointer" onclick="window.history.back()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left w-5 h-5">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          <span style="margin-bottom: 3px">Back</span>
-        </div>
-        <div class="mt-4 text-red-600 text-lg">{{ error }}</div>
-      {% else %}
-        <form action="/" id="heatmap-form" method="POST" enctype="multipart/form-data" class="max-w-xl mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <h1 class="text-3xl font-bold text-center mb-8">Dynamic Heatmap Generator</h1>
-
-          <div class="mb-4">
-            <label for="file" class="block text-gray-700 text-sm font-bold mb-2">Upload Excel File</label>
-            <input
-              type="file"
-              name="file"
-              id="file"
-              accept=".xls,.xlsx"
-              required
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label for="sheet_number" class="block text-gray-700 text-sm font-bold mb-2">Sheet Number</label>
-            <input
-              type="number"
-              name="sheet_number"
-              id="sheet_number"
-              required
-              min="1"
-              value="1"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label for="start_row" class="block text-gray-700 text-sm font-bold mb-2">Start Row</label>
-            <input
-              type="number"
-              name="start_row"
-              id="start_row"
-              required
-              min="1"
-              value="1"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label for="start_col" class="block text-gray-700 text-sm font-bold mb-2">Start Column</label>
-            <input
-              type="number"
-              name="start_col"
-              id="start_col"
-              required
-              min="1"
-              value="1"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label for="plot_title" class="block text-gray-700 text-sm font-bold mb-2">Plot Title</label>
-            <input
-              type="text"
-              name="plot_title"
-              id="plot_title"
-              required
-              value="Heatmap"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div class="mb-4">
-              <label for="color_scheme" class="block text-gray-700 text-sm font-bold mb-2">Color Scheme</label>
-              <select
-                  name="color_scheme"
-                  id="color_scheme"
-                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  onchange="toggleCustomColorFields(this)"
-                  required
-              >
-                  {% for color in color_schemes %}
-                      <option value="{{ color }}">{{ color }}</option>
-                      <option value="{{ color }}_r">{{ color }} (Reversed)</option>
-                  {% endfor %}
-                  <option value="custom_2">Custom Gradient (2 Colors)</option>
-                  <option value="custom_3">Custom Gradient (3 Colors)</option>
-              </select>
-          </div>
-
-          <!-- Custom Gradient Colors Section -->
-          <div class="mb-4" id="custom_color_fields_2" style="display:none;">
-              <label class="block text-gray-700 text-sm font-bold mb-2">Pick 2 Colors for Custom Gradient</label>
-              <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
-              <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
-          </div>
-
-          <!-- Custom Gradient Colors Section -->
-          <div class="mb-4" id="custom_color_fields_3" style="display:none;">
-              <label class="block text-gray-700 text-sm font-bold mb-2">Pick 3 Colors for Custom Gradient</label>
-              <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
-              <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
-              <input type="color" name="custom_color3" id="custom_color3" value="#0000FF" />
-          </div>
-
-          <div class="mb-4">
-            <label for="width" class="block text-gray-700 text-sm font-bold mb-2">Width</label>
-            <input
-              type="number"
-              name="width"
-              id="width"
-              required
-              value="12"
-              step="0.1"
-              min="1"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label for="height" class="block text-gray-700 text-sm font-bold mb-2">Height</label>
-            <input
-              type="number"
-              name="height"
-              id="height"
-              required
-              value="10"
-              step="0.1"
-              min="1"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label for="font_size" class="block text-gray-700 text-sm font-bold mb-2">Font Size</label>
-            <input
-              type="number"
-              name="font_size"
-              id="font_size"
-              required
-              value="16"
-              min="10"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <div class="mb-4">
-            <label for="annotations" class="block text-gray-700 text-sm font-bold mb-2">Show Annotations</label>
-            <select
-              name="annotations"
-              id="annotations"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="True">Yes</option>
-              <option value="False">No</option>
-            </select>
-          </div>
-
-          <div class="mb-4">
-            <label for="line_width" class="block text-gray-700 text-sm font-bold mb-2">Line Width</label>
-            <input
-              type="number"
-              name="line_width"
-              id="line_width"
-              required
-              value="0.5"
-              step="0.1"
-              min="0"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-
-          <button
-            type="submit"
-            class="w-full py-2 px-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Generate Heatmap
-          </button>
-        </form>
-      {% endif %}
-
     </div>
+    <div id="heatmap-result-container" style="display: none">
+      <div class="flex leading-5 items-center mb-4 cursor-pointer" onclick="backToHome()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-chevron-left w-5 h-5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span style="margin-bottom: 3px">Back</span>
+      </div>
+      <div class="text-center mt-8">
+        <h2 class="text-xl font-bold">Generated Heatmap</h2>
+        <img src="https://dummyimage.com/600x400/000/fff&text=Generated+Heatmap" alt="Generated Heatmap"
+          class="mt-4 max-w-full h-auto rounded-lg mx-auto" />
+        <a href="https://dummyimage.com/600x400/000/fff&text=Generated+Heatmap" download="heatmap.png"
+          class="inline-block mt-4 py-2 px-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+          Download Heatmap
+        </a>
+      </div>
+    </div>
+    <div id="heatmap-error-container" style="display: none">
+      <div class="flex leading-5 items-center mb-4 cursor-pointer" onclick="backToHome()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-chevron-left w-5 h-5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span style="margin-bottom: 3px">Back</span>
+      </div>
+      <div class="text-center mt-8 flex flex-col items-center gap-4">
+        <h2 class="text-xl font-bold text-center">
+          Error Generating Heatmap
+        </h2>
+        <img src="https://i.ibb.co.com/zmXsNNT/error.gif" alt="error" />
+        <div class="mt-4 text-red-600 text-lg">Error message</div>
+      </div>
+    </div>
+    <form id="heatmap-form" enctype="multipart/form-data"
+      class="max-w-xl mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <h1 class="text-3xl font-bold text-center mb-8">
+        Dynamic Heatmap Generator
+      </h1>
+      <div class="mb-4">
+        <label for="file" class="block text-gray-700 text-sm font-bold mb-2">Upload Excel File</label>
+        <input type="file" name="file" id="file" accept=".xls,.xlsx" required
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
+      <div class="mb-4">
+        <label for="sheet_number" class="block text-gray-700 text-sm font-bold mb-2">Sheet Number</label>
+        <input type="number" name="sheet_number" id="sheet_number" required min="1" value="1"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
 
-    <script>
-      // Display the spinner when the form is submitted
-      document.getElementById('heatmap-form')?.addEventListener('submit', function(event) {
-        // Show loading spinner
-        document.getElementById('loading-spinner').classList.remove('hidden');
-      });
+      <div class="mb-4">
+        <label for="start_row" class="block text-gray-700 text-sm font-bold mb-2">Start Row</label>
+        <input type="number" name="start_row" id="start_row" required min="1" value="1"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
 
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              clifford: '#da373d',
-            },
-          },
-        },
-      };
+      <div class="mb-4">
+        <label for="start_col" class="block text-gray-700 text-sm font-bold mb-2">Start Column</label>
+        <input type="number" name="start_col" id="start_col" required min="1" value="1"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
 
-      function toggleCustomColorFields(selectElement) {
-          var customColorFields2 = document.getElementById('custom_color_fields_2');
-          var customColorFields3 = document.getElementById('custom_color_fields_3');
-          if (selectElement.value === 'custom_2') {
-              customColorFields2.style.display = 'block';
-              customColorFields3.style.display = 'none';
-          } else if (selectElement.value === 'custom_3') {
-              customColorFields2.style.display = 'none';
-              customColorFields3.style.display = 'block';
+      <div class="mb-4">
+        <label for="plot_title" class="block text-gray-700 text-sm font-bold mb-2">Plot Title</label>
+        <input type="text" name="plot_title" id="plot_title" required value="Heatmap"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
+
+      <div class="mb-4">
+        <label for="color_scheme" class="block text-gray-700 text-sm font-bold mb-2">Color Scheme</label>
+        <select name="color_scheme" id="color_scheme"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          onchange="toggleCustomColorFields(this)" required>
+          {% for color in color_schemes %}
+          <option value="{{ color }}">{{ color }}</option>
+          <option value="{{ color }}_r">{{ color }} (Reversed)</option>
+          {% endfor %}
+          <option value="custom_2">Custom Gradient (2 Colors)</option>
+          <option value="custom_3">Custom Gradient (3 Colors)</option>
+        </select>
+      </div>
+
+      <!-- Custom Gradient Colors Section -->
+      <div class="mb-4" id="custom_color_fields_2" style="display: none">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Pick 2 Colors for Custom Gradient</label>
+        <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
+        <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
+      </div>
+
+      <!-- Custom Gradient Colors Section -->
+      <div class="mb-4" id="custom_color_fields_3" style="display: none">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Pick 3 Colors for Custom Gradient</label>
+        <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
+        <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
+        <input type="color" name="custom_color3" id="custom_color3" value="#0000FF" />
+      </div>
+
+      <div class="mb-4">
+        <label for="width" class="block text-gray-700 text-sm font-bold mb-2">Width</label>
+        <input type="number" name="width" id="width" required value="12" step="0.1" min="1"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
+
+      <div class="mb-4">
+        <label for="height" class="block text-gray-700 text-sm font-bold mb-2">Height</label>
+        <input type="number" name="height" id="height" required value="10" step="0.1" min="1"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
+
+      <div class="mb-4">
+        <label for="font_size" class="block text-gray-700 text-sm font-bold mb-2">Font Size</label>
+        <input type="number" name="font_size" id="font_size" required value="16" min="10"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
+
+      <div class="mb-4">
+        <label for="annotations" class="block text-gray-700 text-sm font-bold mb-2">Show Annotations</label>
+        <select name="annotations" id="annotations"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <option value="True">Yes</option>
+          <option value="False">No</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="line_width" class="block text-gray-700 text-sm font-bold mb-2">Line Width</label>
+        <input type="number" name="line_width" id="line_width" required value="0.5" step="0.1" min="0"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+      </div>
+
+      <button type="submit"
+        class="w-full py-2 px-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Generate Heatmap
+      </button>
+    </form>
+  </div>
+
+  <script>
+    document
+      .getElementById("heatmap-form")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent default form submission
+        document.getElementById("loading-spinner").classList.remove("hidden");
+        const formData = new FormData(this); // Collect form data
+        try {
+          const response = await fetch("/api/generate-heatmap", {
+            method: "POST",
+            body: formData,
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (data["error"]) {
+              document.getElementById("heatmap-form").style.display = "none";
+              document.getElementById(
+                "heatmap-error-container"
+              ).style.display = "block";
+              document.querySelector(
+                "#heatmap-error-container .text-red-600"
+              ).textContent = data["error"];
+              return;
+            }
+            if (data["heatmap_generated"] === true) {
+              document.getElementById("heatmap-form").style.display = "none";
+              document.querySelector("#heatmap-result-container img").src =
+                data["heatmap_image_url"];
+              document.querySelector("#heatmap-result-container a").href =
+                data["heatmap_image_url"];
+              document.getElementById(
+                "heatmap-result-container"
+              ).style.display = "block";
+            } else {
+              document.getElementById("heatmap-form").style.display = "none";
+              document.getElementById(
+                "heatmap-error-container"
+              ).style.display = "block";
+              document.querySelector(
+                "#heatmap-error-container .text-red-600"
+              ).textContent = "Error generating heatmap";
+            }
           } else {
-              customColorFields2.style.display = 'none';
-              customColorFields3.style.display = 'none';
+            const errorMessage = await response.text();
+            document.getElementById("heatmap-error-container").style.display =
+              "block";
+            document.querySelector(
+              "#heatmap-error-container .text-red-600"
+            ).textContent = errorMessage;
           }
-      }
-
-      document.addEventListener('DOMContentLoaded', function() {
-          console.log('DOM loaded');
-          var colorSchemeSelect = document.getElementById('color_scheme');
-          console.log(colorSchemeSelect.value);
-          toggleCustomColorFields(colorSchemeSelect);
+        } catch (error) {
+          document.getElementById("heatmap-error-container").style.display =
+            "block";
+          document.querySelector(
+            "#heatmap-error-container .text-red-600"
+          ).textContent = "Error generating heatmap";
+        } finally {
+          document.getElementById("loading-spinner").classList.add("hidden");
+        }
       });
-    </script>
-  </body>
+
+    function toggleCustomColorFields(selectElement) {
+      var customColorFields2 = document.getElementById(
+        "custom_color_fields_2"
+      );
+      var customColorFields3 = document.getElementById(
+        "custom_color_fields_3"
+      );
+      if (selectElement.value === "custom_2") {
+        customColorFields2.style.display = "block";
+        customColorFields3.style.display = "none";
+      } else if (selectElement.value === "custom_3") {
+        customColorFields2.style.display = "none";
+        customColorFields3.style.display = "block";
+      } else {
+        customColorFields2.style.display = "none";
+        customColorFields3.style.display = "none";
+      }
+    }
+
+    function backToHome() {
+      document.getElementById("heatmap-result-container").style.display =
+        "none";
+      document.getElementById("heatmap-error-container").style.display =
+        "none";
+      document.getElementById("heatmap-form").style.display = "block";
+    }
+  </script>
+</body>
+
 </html>
