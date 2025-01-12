@@ -109,14 +109,7 @@
       </div>
 
       <!-- Custom Gradient Colors Section -->
-      <div class="mb-4" id="custom_color_fields_2" style="display: none">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Pick 2 Colors for Custom Gradient</label>
-        <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
-        <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
-      </div>
-
-      <!-- Custom Gradient Colors Section -->
-      <div class="mb-4" id="custom_color_fields_3" style="display: none">
+      <div class="mb-4" id="custom_color_fields" style="display: none">
         <label class="block text-gray-700 text-sm font-bold mb-2">Pick 3 Colors for Custom Gradient</label>
         <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
         <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
@@ -225,22 +218,20 @@
       });
 
     function toggleCustomColorFields(selectElement) {
-      var customColorFields2 = document.getElementById(
-        "custom_color_fields_2"
-      );
-      var customColorFields3 = document.getElementById(
-        "custom_color_fields_3"
+      var customColorFields = document.getElementById(
+        "custom_color_fields"
       );
       if (selectElement.value === "custom_2") {
-        customColorFields2.style.display = "block";
-        customColorFields3.style.display = "none";
+        customColorFields.style.display = "block";
+        customColorFields.querySelector("#custom_color3").style.display =
+          "none";
       } else if (selectElement.value === "custom_3") {
-        customColorFields2.style.display = "none";
-        customColorFields3.style.display = "block";
+        customColorFields.style.display = "block";
+        customColorFields.querySelector("#custom_color3").style.display =
+          "block";
       } else {
-        customColorFields2.style.display = "none";
-        customColorFields3.style.display = "none";
-      }
+        customColorFields.style.display = "none";
+      } 
     }
 
     function backToHome() {
