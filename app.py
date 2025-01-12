@@ -63,7 +63,13 @@ def index():
             line_width = float(request.form["line_width"])
 
             # Check if custom colors were selected
-            if color_scheme == "custom":
+            if color_scheme == "custom_2":
+                custom_color1 = request.form["custom_color1"]
+                custom_color2 = request.form["custom_color2"]
+                cmap = LinearSegmentedColormap.from_list(
+                    "custom_gradient", [custom_color1, custom_color2]
+                )
+            elif color_scheme == "custom_3":
                 custom_color1 = request.form["custom_color1"]
                 custom_color2 = request.form["custom_color2"]
                 custom_color3 = request.form["custom_color3"]
@@ -119,5 +125,5 @@ def index():
     )
     
 
-# if __name__ == "__main__":
-#     app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)

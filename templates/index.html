@@ -128,12 +128,20 @@
                       <option value="{{ color }}">{{ color }}</option>
                       <option value="{{ color }}_r">{{ color }} (Reversed)</option>
                   {% endfor %}
-                  <option value="custom">Custom Gradient (3 Colors)</option>
+                  <option value="custom_2">Custom Gradient (2 Colors)</option>
+                  <option value="custom_3">Custom Gradient (3 Colors)</option>
               </select>
           </div>
 
           <!-- Custom Gradient Colors Section -->
-          <div class="mb-4" id="custom_color_fields" style="display:none;">
+          <div class="mb-4" id="custom_color_fields_2" style="display:none;">
+              <label class="block text-gray-700 text-sm font-bold mb-2">Pick 2 Colors for Custom Gradient</label>
+              <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
+              <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
+          </div>
+
+          <!-- Custom Gradient Colors Section -->
+          <div class="mb-4" id="custom_color_fields_3" style="display:none;">
               <label class="block text-gray-700 text-sm font-bold mb-2">Pick 3 Colors for Custom Gradient</label>
               <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
               <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
@@ -236,13 +244,26 @@
       };
 
       function toggleCustomColorFields(selectElement) {
-          var customColorFields = document.getElementById('custom_color_fields');
-          if (selectElement.value === 'custom') {
-              customColorFields.style.display = 'block';
+          var customColorFields2 = document.getElementById('custom_color_fields_2');
+          var customColorFields3 = document.getElementById('custom_color_fields_3');
+          if (selectElement.value === 'custom_2') {
+              customColorFields2.style.display = 'block';
+              customColorFields3.style.display = 'none';
+          } else if (selectElement.value === 'custom_3') {
+              customColorFields2.style.display = 'none';
+              customColorFields3.style.display = 'block';
           } else {
-              customColorFields.style.display = 'none';
+              customColorFields2.style.display = 'none';
+              customColorFields3.style.display = 'none';
           }
       }
+
+      document.addEventListener('DOMContentLoaded', function() {
+          console.log('DOM loaded');
+          var colorSchemeSelect = document.getElementById('color_scheme');
+          console.log(colorSchemeSelect.value);
+          toggleCustomColorFields(colorSchemeSelect);
+      });
     </script>
   </body>
 </html>
