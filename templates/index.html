@@ -116,17 +116,28 @@
           </div>
 
           <div class="mb-4">
-            <label for="color_scheme" class="block text-gray-700 text-sm font-bold mb-2">Color Scheme</label>
-            <select
-              name="color_scheme"
-              id="color_scheme"
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
-            >
-              {% for color in color_schemes %}
-                <option value="{{ color }}" {% if color == 'coolwarm' %}selected{% endif %}>{{ color }}</option>
-              {% endfor %}
-            </select>
+              <label for="color_scheme" class="block text-gray-700 text-sm font-bold mb-2">Color Scheme</label>
+              <select
+                  name="color_scheme"
+                  id="color_scheme"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  onchange="toggleCustomColorFields(this)"
+                  required
+              >
+                  {% for color in color_schemes %}
+                      <option value="{{ color }}">{{ color }}</option>
+                      <option value="{{ color }}_r">{{ color }} (Reversed)</option>
+                  {% endfor %}
+                  <option value="custom">Custom Gradient (3 Colors)</option>
+              </select>
+          </div>
+
+          <!-- Custom Gradient Colors Section -->
+          <div class="mb-4" id="custom_color_fields" style="display:none;">
+              <label class="block text-gray-700 text-sm font-bold mb-2">Pick 3 Colors for Custom Gradient</label>
+              <input type="color" name="custom_color1" id="custom_color1" value="#FF0000" />
+              <input type="color" name="custom_color2" id="custom_color2" value="#00FF00" />
+              <input type="color" name="custom_color3" id="custom_color3" value="#0000FF" />
           </div>
 
           <div class="mb-4">
@@ -223,6 +234,15 @@
           },
         },
       };
+
+      function toggleCustomColorFields(selectElement) {
+          var customColorFields = document.getElementById('custom_color_fields');
+          if (selectElement.value === 'custom') {
+              customColorFields.style.display = 'block';
+          } else {
+              customColorFields.style.display = 'none';
+          }
+      }
     </script>
   </body>
 </html>
