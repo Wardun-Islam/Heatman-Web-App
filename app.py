@@ -53,9 +53,10 @@ def generate_heatmap():
                 custom_colors = [
                     request.form["custom_color1"], 
                     request.form["custom_color2"], 
-                    request.form.get("custom_color3")
+                    request.form["custom_color3"]
                 ]
-                custom_colors = [c for c in custom_colors if c]  # Remove None or empty values
+                if color_scheme == "custom_2":
+                    custom_colors.pop()
                 cmap = generate_colormap(color_scheme, custom_colors)
             else:
                 cmap = color_scheme
